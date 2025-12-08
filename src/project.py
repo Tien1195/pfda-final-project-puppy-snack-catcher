@@ -112,6 +112,9 @@ def main_loop(screen, clock, puppy_img, background_img):
      
         all_items.update()
 
+        for item in all_items:
+            if puppy_rect.colliderect(item.rect):
+                item.kill()
      
         screen.blit(background_img, (0, 0))
         all_items.draw(screen)
