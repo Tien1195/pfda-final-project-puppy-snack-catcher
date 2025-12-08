@@ -75,27 +75,34 @@ def main_loop(screen, clock, puppy_img, background_img):
     current_puppy_img = puppy_img_right
     facing_right = True
 
+    score = 10
     frame_count = 0
+    start_time = pygame.time.get_ticks()
+    font = pygame.font.Font(None, 48)
+    small_font = pygame.font.Font(None, 36)
+    large_font = pygame.font.Font(None, 72)
+
+
+
     running = True
 
     while running:
         running = handle_events(running)
 
- 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             puppy_x -= PLAYER_SPEED
-     
             if facing_right:
                 current_puppy_img = puppy_img_left
                 facing_right = False
 
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             puppy_x += PLAYER_SPEED
-
             if not facing_right:
                 current_puppy_img = puppy_img_right
                 facing_right = True
+
+        
 
         puppy_x = max(0, min(puppy_x, SCREEN_WIDTH - current_puppy_img.get_width()))
         puppy_rect.x = puppy_x
@@ -114,11 +121,28 @@ def main_loop(screen, clock, puppy_img, background_img):
 
         for item in all_items:
             if puppy_rect.colliderect(item.rect):
+        # Play different sounds for good/bad items
+       
+                score += item.score
+        # Prevent score from going below 0
+                if score < 0:
+                    score = 0
+        # Check if reached winning score and cap at 100
+                if score >= 100:
+                    score = 100
+                    game_over = True
                 item.kill()
      
         screen.blit(background_img, (0, 0))
+
         all_items.draw(screen)
+
         screen.blit(current_puppy_img, puppy_rect.topleft)
+
+        score_text = font.render(f'Score: {score}', True, WHITE)
+        score_shadow = font.render(f'Score: {score}', True, BLACK)
+        screen.blit(score_shadow, (22, 22))
+        screen.blit(score_text, (20, 20))
 
         pygame.display.flip()
         clock.tick(FPS)
