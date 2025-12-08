@@ -98,19 +98,18 @@ def main_loop(screen, clock, puppy_img, background_img, happy_sound, sad_sound):
         if (remaining_time <= 0 or score <= 0 or score >= 100) and not game_over:
             game_over = True
 
-
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            puppy_x -= PLAYER_SPEED
-            if facing_right:
-                current_puppy_img = puppy_img_left
-                facing_right = False
-
-        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            puppy_x += PLAYER_SPEED
-            if not facing_right:
-                current_puppy_img = puppy_img_right
-                facing_right = True
+        if not game_over:
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+                puppy_x -= PLAYER_SPEED
+                if facing_right:
+                    current_puppy_img = puppy_img_left
+                    facing_right = False
+            if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+                puppy_x += PLAYER_SPEED
+                if not facing_right:
+                    current_puppy_img = puppy_img_right
+                    facing_right = True
 
         puppy_x = max(0, min(puppy_x, SCREEN_WIDTH - current_puppy_img.get_width()))
         puppy_rect.x = puppy_x
@@ -141,24 +140,53 @@ def main_loop(screen, clock, puppy_img, background_img, happy_sound, sad_sound):
      
         screen.blit(background_img, (0, 0))
 
-        all_items.draw(screen)
+        if not game_over:    
+            all_items.draw(screen)
 
-        screen.blit(current_puppy_img, puppy_rect.topleft)
+            screen.blit(current_puppy_img, puppy_rect.topleft)
 
-        score_text = font.render(f'Score: {score}', True, WHITE)
-        score_shadow = font.render(f'Score: {score}', True, BLACK)
-        screen.blit(score_shadow, (22, 22))
-        screen.blit(score_text, (20, 20))
+            score_text = font.render(f'Score: {score}', True, WHITE)
+            score_shadow = font.render(f'Score: {score}', True, BLACK)
+            screen.blit(score_shadow, (22, 22))
+            screen.blit(score_text, (20, 20))
 
-        timer_text = font.render(f'Time: {int(remaining_time)}', True, WHITE)
-        timer_shadow = font.render(f'Time: {int(remaining_time)}', True, BLACK)
-        screen.blit(timer_shadow, (SCREEN_WIDTH - timer_text.get_width() - 18, 22))
-        screen.blit(timer_text, (SCREEN_WIDTH - timer_text.get_width() - 20, 20))
+            timer_text = font.render(f'Time: {int(remaining_time)}', True, WHITE)
+            timer_shadow = font.render(f'Time: {int(remaining_time)}', True, BLACK)
+            screen.blit(timer_shadow, (SCREEN_WIDTH - timer_text.get_width() - 18, 22))
+            screen.blit(timer_text, (SCREEN_WIDTH - timer_text.get_width() - 20, 20))
 
+
+        else:
+            
+            if score >= 100:
+                game_over_text = large_font.render('YOU WIN!', True, WHITE)
+                game_over_shadow = large_font.render('YOU WIN!', True, BLACK)
+            else:
+                game_over_text = large_font.render('GAME OVER!', True, WHITE)
+                game_over_shadow = large_font.render('GAME OVER!', True, BLACK)
+            screen.blit(game_over_shadow, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2 + 3, 153))
+            screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, 150))
+
+            final_score_text = font.render(f'Final Score: {score}', True, WHITE)
+            final_score_shadow = font.render(f'Final Score: {score}', True, BLACK)
+            screen.blit(final_score_shadow, (SCREEN_WIDTH // 2 - final_score_text.get_width() // 2 + 2, 252))
+            screen.blit(final_score_text, (SCREEN_WIDTH // 2 - final_score_text.get_width() // 2, 250))
+
+            restart_text = small_font.render('Press R to Restart or ESC to Quit', True, WHITE)
+            restart_shadow = small_font.render('Press R to Restart or ESC to Quit', True, BLACK)
+            screen.blit(restart_shadow, (SCREEN_WIDTH // 2 - restart_text.get_width() // 2 + 2, 352))
+            screen.blit(restart_text, (SCREEN_WIDTH // 2 - restart_text.get_width() // 2, 350))
+
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_r]:              
+                return True  
+            if keys[pygame.K_ESCAPE]:
+                running = False
+   
         pygame.display.flip()
         clock.tick(FPS)
 
-
+    return False  
 def main():
     screen, clock = init_pygame()
 
@@ -171,8 +199,9 @@ def main():
     happy_sound = pygame.mixer.Sound("Assets/happy.mp3")
     sad_sound = pygame.mixer.Sound("Assets/sad.mp3")
 
-
-    main_loop(screen, clock, puppy_img, background_img, happy_sound, sad_sound)
+    restart = True
+    while restart:
+        restart = main_loop(screen, clock, puppy_img, background_img, happy_sound, sad_sound)
 
     pygame.quit()
 
