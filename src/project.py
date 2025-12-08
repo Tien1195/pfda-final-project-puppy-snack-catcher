@@ -17,6 +17,7 @@ GREEN = (34, 139, 34)
 
 ITEM_FALL_SPEED = 3
 ITEM_SPAWN_RATE = 60
+GAME_TIME = 30
 
 
 ITEMS = {
@@ -84,12 +85,18 @@ def main_loop(screen, clock, puppy_img, background_img):
     small_font = pygame.font.Font(None, 36)
     large_font = pygame.font.Font(None, 72)
 
-
-
     running = True
+    game_over = False
 
     while running:
         running = handle_events(running)
+
+        elapsed_time = (pygame.time.get_ticks() - start_time) / 1000  
+        remaining_time = max(0, GAME_TIME - elapsed_time)
+
+        if (remaining_time <= 0 or score <= 0 or score >= 100) and not game_over:
+            game_over = True
+
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
@@ -104,11 +111,8 @@ def main_loop(screen, clock, puppy_img, background_img):
                 current_puppy_img = puppy_img_right
                 facing_right = True
 
-        
-
         puppy_x = max(0, min(puppy_x, SCREEN_WIDTH - current_puppy_img.get_width()))
         puppy_rect.x = puppy_x
-
 
         frame_count += 1                       
         if frame_count >= ITEM_SPAWN_RATE:
@@ -141,6 +145,11 @@ def main_loop(screen, clock, puppy_img, background_img):
         score_shadow = font.render(f'Score: {score}', True, BLACK)
         screen.blit(score_shadow, (22, 22))
         screen.blit(score_text, (20, 20))
+
+        timer_text = font.render(f'Time: {int(remaining_time)}', True, WHITE)
+        timer_shadow = font.render(f'Time: {int(remaining_time)}', True, BLACK)
+        screen.blit(timer_shadow, (SCREEN_WIDTH - timer_text.get_width() - 18, 22))
+        screen.blit(timer_text, (SCREEN_WIDTH - timer_text.get_width() - 20, 20))
 
         pygame.display.flip()
         clock.tick(FPS)
