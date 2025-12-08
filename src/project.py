@@ -53,6 +53,7 @@ class FallingItem(pygame.sprite.Sprite):
 
 def init_pygame():
     pygame.init()
+    pygame.mixer.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Puppy Snack Catcher")
     clock = pygame.time.Clock()
@@ -66,7 +67,7 @@ def handle_events(running):
     return running
 
 
-def main_loop(screen, clock, puppy_img, background_img):
+def main_loop(screen, clock, puppy_img, background_img, happy_sound, sad_sound):
     all_items = pygame.sprite.Group()
 
     puppy_x = SCREEN_WIDTH // 2 - puppy_img.get_width() // 2
@@ -122,11 +123,14 @@ def main_loop(screen, clock, puppy_img, background_img):
             new_item = FallingItem(item_name, item_score)
             all_items.add(new_item)
 
-     
         all_items.update()
 
         for item in all_items:
-            if puppy_rect.colliderect(item.rect):      
+            if puppy_rect.colliderect(item.rect):
+                if item.score > 0:
+                    happy_sound.play()
+                else:
+                    sad_sound.play()      
                 score += item.score
                 if score < 0:
                     score = 0
@@ -164,7 +168,11 @@ def main():
     loaded_img = pygame.image.load("Assets/Puppy.png").convert_alpha()
     puppy_img = pygame.transform.smoothscale(loaded_img, (100, 100))
 
-    main_loop(screen, clock, puppy_img, background_img)
+    happy_sound = pygame.mixer.Sound("Assets/happy.mp3")
+    sad_sound = pygame.mixer.Sound("Assets/sad.mp3")
+
+
+    main_loop(screen, clock, puppy_img, background_img, happy_sound, sad_sound)
 
     pygame.quit()
 
