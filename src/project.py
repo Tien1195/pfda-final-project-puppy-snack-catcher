@@ -20,10 +20,12 @@ ITEM_SPAWN_RATE = 60
 
 
 ITEMS = {
-    'chips.png': -10,
-    'corn.png': 15,
+    'chips.png': 5,
+    'corn.png': 10,
     'corn_dog.png': 20,
     'cotton_candy.png': 25,
+    'fish_bone.png': -20,
+    'sock.png': -15
 }
 
 
@@ -120,14 +122,10 @@ def main_loop(screen, clock, puppy_img, background_img):
         all_items.update()
 
         for item in all_items:
-            if puppy_rect.colliderect(item.rect):
-        # Play different sounds for good/bad items
-       
+            if puppy_rect.colliderect(item.rect):      
                 score += item.score
-        # Prevent score from going below 0
                 if score < 0:
                     score = 0
-        # Check if reached winning score and cap at 100
                 if score >= 100:
                     score = 100
                     game_over = True
