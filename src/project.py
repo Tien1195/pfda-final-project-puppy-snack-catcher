@@ -8,16 +8,16 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 FPS = 60
 
-PLAYER_SPEED = 7
+PLAYER_SPEED = 8
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 SKY_BLUE = (135, 206, 235)
 GREEN = (34, 139, 34)
 
-ITEM_FALL_SPEED = 3
-ITEM_SPAWN_RATE = 60
-GAME_TIME = 30
+ITEM_FALL_SPEED = 7
+ITEM_SPAWN_RATE = 10
+GAME_TIME = 10
 
 
 ITEMS = {
@@ -139,6 +139,11 @@ def main_loop(screen, clock, puppy_img, background_img, happy_sound, sad_sound):
                 item.kill()
      
         screen.blit(background_img, (0, 0))
+
+        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        overlay.set_alpha(100)  
+        overlay.fill((0, 0, 0))
+        screen.blit(overlay, (0, 0))
 
         if not game_over:    
             all_items.draw(screen)
